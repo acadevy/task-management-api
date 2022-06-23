@@ -100,3 +100,22 @@ userSchema.methods.generateAuthToken = async function() {
   
     return user;
   };
+
+
+  // Hash the plain text password before saving
+userSchema.pre('save', async function(next) {
+    if (this.isModified('password')) {
+      this.password = await bcrypt.hash(this.password, 8);
+    }
+    next();
+  });
+
+  // Delete user tasks when user is removed
+userSchema.pre('remove', async function(next) {
+    await Task.deleteMany({ owner: this._id });
+    next();
+  });
+  
+  const User = mongoose.model('User', userSchema);
+  
+  module.exports = User;
