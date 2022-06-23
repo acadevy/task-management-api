@@ -50,9 +50,9 @@ const userSchema = mongoose.Schema({
             }
         }
     ],
-    avatar: {
-        type: Buffer
-    }
+    // avatar: {
+    //     type: Buffer
+    // }
 },
     {
         timestamps: true
@@ -73,4 +73,30 @@ userSchema.methods.generateAuthToken = async function() {
     localField: '_id',
     foreignField: 'owner'
   });
+
+  userSchema.methods.toJSON = function() {
+    const userObject = this.toObject();
   
+    delete userObject.password;
+    delete userObject.tokens;
+    delete userObject.__v;
+    // delete userObject.avatar;
+  
+    return userObject;
+  };
+  
+  userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email });
+  
+    if (!user) {
+      throw new Error('Unable to login!');
+    }
+  
+    const isMatch = await bcrypt.compare(password, user.password);
+  
+    if (!isMatch) {
+      throw new Error('Unable to login!');
+    }
+  
+    return user;
+  };
