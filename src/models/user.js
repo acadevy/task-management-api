@@ -32,5 +32,29 @@ const userSchema = mongoose.Schema({
                 throw new Error('Password cannot contain password');
             }
         }
+    },
+    age: {
+        type: Number,
+        default: 0,
+        validate(value){
+            if(value < 0){
+                throw new Error('Age must be a positive number!');
+            }
+        }
+    },
+    tokens: [
+        {
+            token: {
+                type: String,
+                required: true
+            }
+        }
+    ],
+    avatar: {
+        type: Buffer
     }
-})
+},
+    {
+        timestamps: true
+    }
+);
