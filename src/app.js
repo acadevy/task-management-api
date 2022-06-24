@@ -1,6 +1,15 @@
 const express = require("express");
 const app = express();
 
-app.listen(4000,()=>{
-    console.log("server is running on port 4000");
+require('./db/mongoose');
+require('dotenv').config();
+
+
+
+const port = process.env.PORT;
+
+
+
+app.listen(port,()=>{
+    console.log(`server is running on port ${port}`);
 })
