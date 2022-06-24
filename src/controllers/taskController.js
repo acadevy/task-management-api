@@ -12,7 +12,7 @@ module.exports = {
         await task.save();
         res.status(201).send(task);
       } catch (error) {
-        res.sgtatus(400).json(error);
+        res.status(400).json(error);
       }
     },
 
