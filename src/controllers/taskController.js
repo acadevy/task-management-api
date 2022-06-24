@@ -12,7 +12,7 @@ module.exports = {
         await task.save();
         res.status(201).send(task);
       } catch (error) {
-        res.status(400).json(error);
+        res.sgtatus(400).json(error);
       }
     },
 
@@ -46,6 +46,65 @@ module.exports = {
           res.status(500).json(error);
         }
       },
+      async getTaskById(req, res) {
+        try {
+          const task = await Task.findOne({
+            _id: req.params.id,
+            owner: req.user._id
+          });
+    
+          if (!task) {
+            res.status(404).send('Task not found!');
+          }
+          res.status(200).send(task);
+        } catch (error) {
+          res.status(500).send('Task not found!');
+        }
+      },
+      
 
-
+      async updateTaskById(req, res) {
+        const updates = Object.keys(req.body);
+        const allowedUpdates = ['description', 'completed'];
+        const isValidOperation = updates.every(update =>
+          allowedUpdates.includes(update)
+        );
+    
+        if (!isValidOperation) {
+          return res.status(400).send({ error: 'Invalid updates!' });
+        }
+    
+        try {
+          const task = await Task.findOne({
+            _id: req.params.id,
+            owner: req.user._id
+          });
+    
+          if (!task) {
+            return res.status(404).send('Task not found!');
+          }
+    
+          updates.forEach(update => (task[update] = req.body[update]));
+          await task.save();
+          res.status(200).send(task);
+        } catch (error) {
+          res.status(400).send(error);
+        }
+      },
+      async deleteTaskById(req, res) {
+        try {
+          const task = await Task.findOneAndDelete({
+            _id: req.params.id,
+            owner: req.user._id
+          });
+    
+          if (!task) {
+            res.status(404).send();
+          }
+    
+          res.send(task);
+        } catch (error) {
+          res.status(500).send();
+        }
+      }
 }
